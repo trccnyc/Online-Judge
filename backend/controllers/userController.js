@@ -1,30 +1,34 @@
-const express = require("express");
-const router = express.Router();
-const { DBconnection } = require("../database/db.js");
 const User = require("../models/User.js");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 require("dotenv").config();
-
 
 const register = async (req, res) => {
   try {
-
     //----- obtain info and check if any missing info -----
     const { firstName, lastName, email, password } = req.body;
     if (!(firstName && lastName && email && password))
-      return res.status(400).send("Please enter all info");
+      return res.status(400).send({
+        sucess: false,
+        message: "Enter all info",
+      });
 
     //-------- valid email -------
     if (!validator.isEmail(email)) {
-      return res.status(400).send("Email is not valid");
+      return res.status(400).send({
+        sucess: false,
+        message: "Email is not valid",
+      });
     }
 
     //------ check if user already exists ------
     const emailused = await User.findOne({ email });
-    if (emailused) return res.status(400).send("Email already in use");
+    if (emailused)
+      return res.status(400).send({
+        sucess: false,
+        message: "Email already in use",
+      });
 
     //------ encrypt password ------
     const salt = await bcrypt.genSalt(10);
@@ -42,33 +46,46 @@ const register = async (req, res) => {
     const token = jwt.sign({ id: user._id, email }, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
-    console.log(token);
+
     user.token = token;
-    user.temp = "temp";
     user.password = undefined;
 
     //------send responce with token------------
-    res.status(200).json({ message: "Register successfull", user, token });
+    res.status(200).json({
+      sucess: false,
+      message: "Successfull Registered",
+      user,
+      token,
+    });
   } catch (err) {
-    console.log("Error while trying to register",err);
+    console.log("Error while trying to register", err);
   }
 };
 
-
 const login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
     if (!(email && password))
-      return res.status(400).send("Please enter all info");
+      return res.status(400).send({
+        sucess: false,
+        message: "Please enter all info",
+      });
 
     //----- valid email check-------
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).send("Register to login");
+    if (!user)
+      return res.status(400).send({
+        sucess: false,
+        message: "Register to login",
+      });
 
     //-----password check---------
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).send("Incorrect password");
+    if (!match)
+      return res.status(400).send({
+        sucess: false,
+        message: "Incorrect password",
+      });
 
     //------- jwt --------
     const token = jwt.sign({ id: user._id, email }, process.env.SECRET_KEY, {
@@ -81,8 +98,10 @@ const login = async (req, res) => {
     const options = {
       expiresIn: new Date(Date.now() + 86400 * 1000),
       httpOnly: true, //only manipulated by server
+      secure:true,
+      sameSite: "None",
     };
-
+    console.log(token);
     //---------send the token---------
     res.status(200).cookie("token", token, options).json({
       message: "Login succesfull",
@@ -90,9 +109,8 @@ const login = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.log("Error while trying to login",err);
+    console.log("Error while trying to login", err);
   }
 };
-
 
 module.exports = { register, login };

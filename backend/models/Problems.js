@@ -1,22 +1,34 @@
 const mongoose = require("mongoose");
 const problemSchema = new mongoose.Schema({
-  Title: {
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  examples: [
+    {
+      input: { type: String, required: true },
+      output: { type: String, required: true },
+    },
+  ],
+  constraints: {
     type: String,
     default: null,
   },
-  Description: {
+  input_format: {
     type: String,
-    default: null,
+    required: true,
   },
-  Examples :[{
-    input:String,
-    output:String,
-  }],
-  timeConstraint :{
-    type: String
+  output_format: {
+    type: String,
+    required: true,
   },
-  spaceConstraint :{
-    type: String
-  }
+  limits: {
+    time: { type: String, required: true },
+    space: { type: String, required: true },
+  },
 });
 module.exports = mongoose.model("problem", problemSchema);

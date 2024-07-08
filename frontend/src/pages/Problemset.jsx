@@ -7,7 +7,10 @@ useEffect(()=>{
 fetchData()}, [])
 
 const fetchData = async () => {
-const response = await fetch("http://localhost:3000/problemset");
+    const token =localStorage.token;
+const response = await fetch("http://localhost:3000/problemset",{headers: {
+    'token': token}
+});
 const json = await response.json();
 console.log(json);
 setP(json);
@@ -15,10 +18,8 @@ setP(json);
 
 
 return (
-<div>
-    <h1>awkskuihf</h1>
 <Problems problems={Ps}/>
-</div>
+
 )
 }
 export default Problemset;
