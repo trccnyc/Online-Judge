@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { register } from "../services/register";
+import { BottomWarning } from "../components/Bottomwarming";
+import { Button } from "../components/Button";
+import { InputBox } from "../components/InputBox";
+import { Heading } from "../components/Heading";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +16,6 @@ const Register = () => {
       console.log(firstName,lastName,email, password);
       const info = { firstName,lastName,email, password};
       const data = await register(info);
-      console.log("Signup result :", data);
     } catch (err) {
       console.log("Error in signup page",err);
     }
@@ -20,56 +23,15 @@ const Register = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-green-100">
     <form className="bg-white border border-gray-400 shadow-md rounded-xl px-8 pt-6 pb-8 mb-4 w-full max-w-md" onSubmit={handeSubmit}>
-      <h1 className="text-2xl font-bold mb-6 text-center">Sign up</h1>
-      <div className="mb-4 ">
-      <label className="block text-gray-700 text-sm font-bold mb-2">First Name :</label>
-      <input
-        type="text"
-        value={firstName}
-        placeholder="First Name"
-        onChange={(e) => setfN(e.target.value)}
-        required
-        className="shadow appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      />
-      </div>
-      <div className="mb-4 ">
-      <label className="block text-gray-700 text-sm font-bold mb-2">Last Name :</label>
-      <input
-        type="text"
-        value={lastName}
-        placeholder="Last Name"
-        onChange={(e) => setlN(e.target.value)}
-        required
-        className="shadow appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      />
-      </div>
-      <div className="mb-4 ">
-      <label className="block text-gray-700 text-sm font-bold mb-2">Email :</label>
-      <input
-        type="email"
-        value={email}
-        placeholder="email"
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="shadow appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      />
-      </div>
-      <div className="mb-6 ">
-      <label className="block text-gray-700 text-sm font-bold mb-2">Password :</label>
-      <input
-        type="password"
-        value={password}
-        placeholder="password"
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        className="shadow appearance-none border border-gray-400 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      />
-      </div>
+      <Heading label={"Sign Up"}/>
+      <InputBox onChange={(e) => setfN(e.target.value)} type={'text'} placeholder={"First Name"} label={"First Name"}/>
+      <InputBox onChange={(e) => setlN(e.target.value)} type={'text'} placeholder={"Last Name"} label={"Last Name"}/>
+      <InputBox onChange={(e) => setEmail(e.target.value)} type={'email'} placeholder={"example@gmail.com"} label={"Email"}/>
+      <InputBox onChange={(e) => setPassword(e.target.value)} type={'password'} placeholder={"password@123"} label={"Password"}/>
       <div className="flex items-center justify-center">
-          <button className="w-1/3 text-center mt-2 bg-gradient-to-br from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 focus:outline-none text-white font-medium rounded-lg text-sm px-5 py-2.5">
-            Sign Up
-          </button>
-        </div>
+      <Button >Signup</Button>
+      </div>
+        <BottomWarning label={"Already have an account?"} buttonText={"Login"} to={"/login"}></BottomWarning>
     </form>
     </div>
   );

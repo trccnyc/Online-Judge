@@ -4,7 +4,6 @@ const { execPy } = require("../compiler/execCode/execPy.js");
 const { execJs } = require("../compiler/execCode/execJs.js");
 
 const compile = async (req, res) => {
-  console.log(req.cookies);
   const { language = "cpp", code, input } = req.body;
   if (code === undefined)
     return res.status(400).json({ success: false, message: "Empty code!" });

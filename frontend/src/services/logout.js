@@ -1,9 +1,9 @@
 import axios from 'axios';
-const API_URL="http://localhost:3000"
+const API_URL="http://localhost:3000";
 
-export const login=async(info)=>{
+export const logout=async()=>{
     try{
-        const response= await axios.post(`${API_URL}/login`,info,{withCredentials: true})
+        const response= await axios.get(`${API_URL}/logout`,{withCredentials: true})
         console.log(response);
         return response.data;
     }

@@ -1,32 +1,38 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Editor from 'react-simple-code-editor';
 import {highlight,languages} from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css';
-import axios from 'axios';
+import { run } from '../services/run';
 
+const defaultCodes={'cpp':`#include <iostream>
 
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}
+`,'c':`#include <stdio.h>
+
+int main() {
+    printf("Hello, World!");
+    return 0;
+}        
+`,'py':`print("Hello, World!")
+`,'java':`public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+`}
 const Compiler = ()=>{
-    const [code,setCode]=useState(`
-    #include <iostream> 
-    using namespace std;
-    int main() { 
-        // Declare variables
-        int num1, num2, sum;
-        // Prompt user for input
-        cin >> num1 >> num2;  
-        // Calculate the sum
-        sum = num1 + num2;  
-        // Output the result
-        cout << "The sum of the two numbers is: " << sum;  
-        // Return 0 to indicate successful execution
-        return 0;  
-    }  
-        `);
+    const [code,setCode]=useState('');
         const [language,setLanguage]=useState('cpp')
         const [input, setInput] = useState('');
         const [output, setOutput] = useState('');
+        useEffect(()=>{
+        setCode(defaultCodes[language]);
+        },[language])
         const handleSubmit = async (e) => {
           e.preventDefault();
           const payload = {
@@ -35,8 +41,9 @@ const Compiler = ()=>{
             input,
           };
           try {
-            const { data } = await axios.post('http://localhost:3000/compiler/run', payload,{withCredentials: true});
-            console.log(data);
+            setOutput('Loading...')
+            const data=await run(payload)
+            console.log(payload);
             setOutput(data.output);
           } catch (error) {
             console.log(error.response);
@@ -63,7 +70,7 @@ const Compiler = ()=>{
             padding={10}
             style={{
               fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 12,
+              fontSize: 14,
               outline: 'none',
               border: '1px solid gray',
               backgroundColor: '#f7fafc',

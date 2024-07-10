@@ -101,16 +101,21 @@ const login = async (req, res) => {
       secure:true,
       sameSite: "None",
     };
-    console.log(token);
     //---------send the token---------
     res.status(200).cookie("token", token, options).json({
       message: "Login succesfull",
       success: true,
-      token,
+      user,
+      token
     });
   } catch (err) {
     console.log("Error while trying to login", err);
   }
 };
+const logout=async(req, res) => {
+  console.log('Logging out');
+  res.clearCookie('token');
+  res.status(200).send({ message: 'Logged out successfully' });
+};
 
-module.exports = { register, login };
+module.exports = { register, login ,logout};
