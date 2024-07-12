@@ -1,26 +1,49 @@
 const { exec } = require("child_process");
 const fs = require("fs");
+const Problem = require("../../models/Problems");
 const path = require("path");
 
-const execPy = async (filePath, input) => {
+const execPy = async (filePath, input, id) => {
+  const problem = await Problem.findById(id);
+  const timeLimit = problem.limits.time;
+  const spaceLimitKB = problem.limits.space * 1024 * 4;
+
   return new Promise((resolve, reject) => {
-    const process = exec(`python ${filePath}`, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
+    const startTime = process.hrtime();
+    const execProcess = exec(
+      `python ${filePath}`,
+      { timeout: timeLimit * 1000, maxBuffer: 1024 * 4096 },
+      (err, stdout, stderr) => {
+        const [s, nanos] = process.hrtime(startTime);
+        const elapsedTime = s + nanos / 1e9;
+        if (err) {
+          if (err.signal == "SIGTERM")
+            reject({
+              type: "Time Limit Exceeded",
+              message: "Time Limit Exceeded",
+            });
+          else {
+            reject({
+              type: "Runtime Error",
+              message: stderr || err.message,
+            });
+          }
+        } else if (elapsedTime > timeLimit)
+          reject({
+            type: "Time Limit Exceeded",
+            message: "Time Limit Exceeded",
+          });
+        else if (stderr)
+          reject({
+            type: "Runtime Error",
+            message: stderr,
+          });
+        else resolve(stdout);
       }
-      if (stderr) {
-        reject(stderr);
-      }
-      resolve(stdout);
-    });
-    if (input) {
-      const formattedInput = input
-        .replace(/^\s+|\s+$/g, "")
-        .split(/\s+/)
-        .join("\n");
-      process.stdin.write(formattedInput);
-      process.stdin.end();
-    }
+    );
+
+    execProcess.stdin.write(input);
+    execProcess.stdin.end();
   });
 };
 module.exports = { execPy };

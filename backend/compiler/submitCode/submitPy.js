@@ -1,33 +1,59 @@
 const { exec } = require("child_process");
-const TestCase = require("../../models/Testcases");
+const Problem = require("../../models/Problems");
 
 const submitPy = async (filePath, id) => {
-  const testcasesSchema = await TestCase.findById(id);
-  const testcases = testcasesSchema.testcase;
+  const problem = await Problem.findById(id);
+  const timeLimit = problem.limits.time;
+  const spaceLimitKB = problem.limits.space * 1024 * 4;
+  const testcases = problem.testcases;
+
   return new Promise((resolve, reject) => {
-    let b = 0;
+    let b = testcases.length;
+    let totalTime = 0;
+    let flag = false;
     for (let i = 0; i < testcases.length; i++) {
-      const process = exec(`python ${filePath}`, (error, stdout, stderr) => {
-        if (error) {
-          reject(error);
-        }
-        if (stderr) {
-          reject(stderr);
-        }
+      const startTime = process.hrtime();
+      const execProcess = exec(`python ${filePath}`, (err, stdout, stderr) => {
+        if (flag) return;
+        const [s, nanos] = process.hrtime(startTime);
+        const elapsedTime = s + nanos / 1e9;
+        totalTime += elapsedTime;
+        if (err) {
+          if (err.signal == "SIGTERM")
+            return reject({
+              type: "Time Limit Exceeded",
+              message: "Time Limit Exceeded",
+            });
+          else {
+            return reject({
+              type: "Runtime Error",
+              message: stderr || err.message,
+            });
+          }
+        } else if (elapsedTime > timeLimit)
+          return reject({
+            type: "Time Limit Exceeded",
+            message: "Time Limit Exceeded",
+          });
+        else if (stderr)
+          return reject({ type: "Runtime Error", message: stderr });
         const trimmedoutput = stdout.trim();
-        console.log(testcases[i].output, trimmedoutput);
         if (testcases[i].output !== trimmedoutput) {
-          reject({ message: "WA" });
+          flag = true;
+          return reject({
+            type: "Wrong Answer",
+            message: "Wrong Answer",
+            expected_output: testcases[i].output,
+            your_output: trimmedoutput,
+          });
         }
-        b++;
-        if (b == testcases.length) resolve({ message: "Accepted" });
+        b--;
+        if (b === 0)
+          resolve({ message: "Accepted", time: totalTime / (i + 1) });
       });
-      const formattedInput = testcases[i].input
-        .replace(/^\s+|\s+$/g, "")
-        .split(/\s+/)
-        .join("\n");
-      process.stdin.write(formattedInput);
-      process.stdin.end();
+      
+      execProcess.stdin.write(testcases[i].input);
+      execProcess.stdin.end();
     }
   });
 };

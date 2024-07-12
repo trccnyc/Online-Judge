@@ -1,7 +1,6 @@
 const Problem = require("../models/Problems");
-const TestCase = require("../models/Testcases");
 
-const addproblem = async (req, res) => {
+const addProblem = async (req, res) => {
   try {
     console.log(req.body);
     const {
@@ -12,6 +11,7 @@ const addproblem = async (req, res) => {
       input_format,
       output_format,
       constraints,
+      testcases,
     } = req.body;
     if (
       !(
@@ -20,7 +20,8 @@ const addproblem = async (req, res) => {
         examples &&
         limits &&
         input_format &&
-        output_format
+        output_format &&
+        testcases
       )
     )
       return res.status(400).send({
@@ -40,6 +41,7 @@ const addproblem = async (req, res) => {
           input_format,
           output_format,
           constraints,
+          testcases,
         },
         { new: true }
       );
@@ -58,6 +60,7 @@ const addproblem = async (req, res) => {
         input_format,
         output_format,
         constraints,
+        testcases,
       });
 
       res.status(200).json({
@@ -67,39 +70,28 @@ const addproblem = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log("Error while trying to add problem", err);
+    console.log("Error in ./controllers/problemController-addProblem", err);
   }
 };
-const addtestcase = async (req, res) => {
+const fetchProblembyID = async (req, res) => {
   try {
-    console.log(req.body);
-    const { problem, testcase } = req.body;
-    if (!(problem && testcase))
-      return res.status(400).send({
-        success: false,
-        message: "Please enter all info",
-      });
-
-    //------ check if user already exists ------
-    const titleExists = await Problem.findById(problem);
-    if (!titleExists) {
-      return res.status(400).send({
-        success: true,
-        message: "Problem with the given id not found",
-      });
-    }
-
-    //------ save user to database ------
-    let testcases = await TestCase.findOneAndUpdate(
-      { problem: problem },
-      { testcase: testcase },
-      { new: true, upsert: true }
-    );
-
-    res.status(200).json({ message: "Problem added to the dataset", testcase });
+    const { id } = req.params;
+    const problem = await Problem.findById(id);
+    res.json({ success: true, problem });
   } catch (err) {
-    console.log("Error while trying to add problem", err);
+    console.log(
+      "Error in ./controllers/problemController-fetchProblembyID",
+      err
+    );
+  }
+};
+const fetchProblems = async (req, res) => {
+  try {
+    const problems = await Problem.find({});
+    res.json({ success: true, problems });
+  } catch (err) {
+    console.log("Error in ./controllers/problemController-fetchProblems", err);
   }
 };
 
-module.exports = { addproblem, addtestcase };
+module.exports = { addProblem, fetchProblems, fetchProblembyID };

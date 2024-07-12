@@ -9,7 +9,7 @@ const Problem = () => {
     <>
       <div className="mx-8  flex flex-col lg:flex-row items-stretch">
         <Render_problem id={id}></Render_problem>
-        <Render_compiler></Render_compiler>
+        <Render_compiler id={id}></Render_compiler>
       </div>
     </>
   );

@@ -1,27 +1,61 @@
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const Problem = require("../../models/Problems");
 
-const outputPath = path.join(__dirname, "outputs");
-
-if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
-
-const execCpp = async (filePath, input) => {
-  const fileName = path.basename(filePath).split(".")[0];
-  const outPath = path.join(outputPath, `${fileName}.exe`);
+const compileCpp = async (filePath, execFile) => {
   return new Promise((resolve, reject) => {
-    const process = exec(
-      `g++ ${filePath} -o${outPath} && ${outPath}`,
-      (err, stdout, stderr) => {
-        if (err) reject({ err, stderr });
-        if (stderr) reject(stderr);
-        resolve(stdout);
-      }
-    );
-    if (input) {
-      process.stdin.write(input);
-      process.stdin.end();
-    }
+    exec(`g++ ${filePath} -o${execFile}`, (err, stdout, stderr) => {
+      if (err)
+        return reject({
+          type: "Compilation Error",
+          message: stderr || err.message,
+        });
+      if (stderr) return reject({ type: "Compilation Error", message: stderr });
+      resolve();
+    });
   });
 };
-module.exports = { execCpp };
+
+const execCpp = async (execFile, input, id) => {
+  const problem = await Problem.findById(id);
+  const timeLimit = problem.limits.time;
+  const spaceLimitKB = problem.limits.space * 1024 * 4;
+
+  return new Promise((resolve, reject) => {
+    const startTime = process.hrtime();
+    const execProcess = exec(
+      `${execFile}`,
+      { timeout: timeLimit * 1000, maxBuffer: 1024 * 4096 },
+      (err, stdout, stderr) => {
+        const [s, nanos] = process.hrtime(startTime);
+        const elapsedTime = s + nanos / 1e9;
+        if (err) {
+          if (err.signal == "SIGTERM")
+            reject({
+              type: "Time Limit Exceeded",
+              message: "Time Limit Exceeded",
+            });
+          else {
+            reject({
+              type: "Runtime Error",
+              message: stderr || err.message,
+            });
+          }
+        } else if (elapsedTime > timeLimit)
+          reject({
+            type: "Time Limit Exceeded",
+            message: "Time Limit Exceeded",
+          });
+        else if (stderr)
+          reject({
+            type: "Runtime Error",
+            message: stderr,
+          });
+        else resolve(stdout);
+      }
+    );
+
+    execProcess.stdin.write(input);
+    execProcess.stdin.end();
+  });
+};
+module.exports = { execCpp, compileCpp };

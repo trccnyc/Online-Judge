@@ -30,5 +30,11 @@ const problemSchema = new mongoose.Schema({
     time: { type: String, required: true },
     space: { type: String, required: true },
   },
+  testcases: [
+    {
+      input: { type: String, required: true },
+      output: { type: String, required: true },
+    },
+  ],
 });
 module.exports = mongoose.model("problem", problemSchema);

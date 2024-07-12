@@ -5,6 +5,7 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism.css";
+import { submit } from "../services/submit_code";
 
 
 const defaultCodes={'cpp':`#include <iostream>
@@ -26,7 +27,7 @@ const defaultCodes={'cpp':`#include <iostream>
         }
     }
     `}
-export const Render_compiler = () => {
+export const Render_compiler = ({id}) => {
     const [code, setCode] = useState('');
     const [language, setLanguage] = useState("cpp");
     const [input, setInput] = useState("");
@@ -34,12 +35,23 @@ export const Render_compiler = () => {
     useEffect(()=>{
       setCode(defaultCodes[language]);
       },[language])
+      const handleSubmit=async()=>{
+        const payload={
+          language,
+          code,
+        }
+        try{
+          setOutput('Loading...');
+          const data=await submit(payload,id);
+          console.log(data.output.message);
+          setOutput(data.output.message)
+        }catch(err){console.log(err)}
+      }
     const handleRun = async () => {
       const payload = {
         language,
         code,
         input,
-        token:localStorage.token
       };
   
       try {
@@ -97,7 +109,7 @@ export const Render_compiler = () => {
                 Run
               </button>
               <button
-                onClick={handleRun}
+                onClick={handleSubmit}
                 type="button"
                 className="w-1/4 text-center mt-4 bg-gradient-to-br from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 focus:outline-none text-white font-medium rounded-lg text-sm px-5 py-2.5"
               >

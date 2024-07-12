@@ -1,47 +1,59 @@
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
-const TestCase = require("../../models/Testcases");
-const outputPath = path.join(__dirname, "outputs");
+const Problem = require("../../models/Problems");
 
-if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
+const submitCpp = async (execFile, id) => {
+  const problem = await Problem.findById(id);
+  const timeLimit = problem.limits.time;
+  const spaceLimitKB = problem.limits.space * 1024 * 4;
+  const testcases = problem.testcases;
 
-const compile = async (filePath, outPath) => {
   return new Promise((resolve, reject) => {
-    exec(`g++ ${filePath} -o${outPath}`, (err, stdout, stderr) => {
-      if (err) return reject({ err, stderr });
-      if (stderr) return reject(stderr);
-      resolve();
-    });
-  });
-};
-
-const submitCpp = async (filePath, id) => {
-  const fileName = path.basename(filePath).split(".")[0];
-  const outPath = path.join(outputPath, `${fileName}.exe`);
-  await compile(filePath, outPath);
-  const testcasesSchema = await TestCase.findOne({ problem: id });
-  const testcases = testcasesSchema.testcase;
-  return new Promise((resolve, reject) => {
-    let b = 0;
+    let b = testcases.length;
+    let totalTime = 0;
+    let flag = false;
     for (let i = 0; i < testcases.length; i++) {
       const startTime = process.hrtime();
-      const process1 = exec(`${outPath}`, (err, stdout, stderr) => {
+      const execProcess = exec(`${execFile}`, (err, stdout, stderr) => {
+        if (flag) return;
         const [s, nanos] = process.hrtime(startTime);
-        console.log(s, nanos);
-        if (err) return reject({ err, stderr });
-        if (stderr) return reject(stderr);
+        const elapsedTime = s + nanos / 1e9;
+        totalTime += elapsedTime;
+        if (err) {
+          if (err.signal == "SIGTERM")
+            return reject({
+              type: "Time Limit Exceeded",
+              message: "Time Limit Exceeded",
+            });
+          else {
+            return reject({
+              type: "Runtime Error",
+              message: stderr || err.message,
+            });
+          }
+        } else if (elapsedTime > timeLimit)
+          return reject({
+            type: "Time Limit Exceeded",
+            message: "Time Limit Exceeded",
+          });
+        else if (stderr)
+          return reject({ type: "Runtime Error", message: stderr });
         const trimmedoutput = stdout.trim();
-        console.log(testcases[i].output, trimmedoutput);
         if (testcases[i].output !== trimmedoutput) {
-          reject({ message: "WA" });
+          flag = true;
+          return reject({
+            type: "Wrong Answer",
+            message: "Wrong Answer",
+            expected_output: testcases[i].output,
+            your_output: trimmedoutput,
+          });
         }
-        b++;
-        if (b == testcases.length)
-          resolve({ message: "Accepted", time: `${s + nanos / 1e9}` });
+        b--;
+        if (b === 0)
+          resolve({ message: "Accepted", time: totalTime / (i + 1) });
       });
-      process1.stdin.write(testcases[i].input);
-      process1.stdin.end();
+      
+      execProcess.stdin.write(testcases[i].input);
+      execProcess.stdin.end();
     }
   });
 };
