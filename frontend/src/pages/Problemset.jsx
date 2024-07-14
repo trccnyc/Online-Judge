@@ -9,7 +9,7 @@ fetchData()}, [])
 
 const fetchData = async () => {
 const response = await problemset();
-setP(response);
+setP(response.problems);
 }
 
 

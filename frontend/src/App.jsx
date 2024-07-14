@@ -11,7 +11,6 @@ import Navbar from "./components/Navbar.jsx";
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { userAtom } from './atoms/userAtom.js';
 import { useEffect } from 'react';
-import axios from 'axios';
 import { fetchuser } from './services/fetchuser.js';
 
 function App() {

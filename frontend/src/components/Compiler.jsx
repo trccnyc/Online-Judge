@@ -44,7 +44,8 @@ export const Render_compiler = ({id}) => {
           setOutput('Loading...');
           const data=await submit(payload,id);
           console.log(data.output.message);
-          setOutput(data.output.message)
+          if(data.output.message=='Accepted')setOutput(data.output.message )
+          else setOutput(`${data.output.message}\ninput : ${data.output.testcase}\nyour output : ${data.output.your_output}\nexpected output : ${data.output.expected_output}`)
         }catch(err){console.log(err)}
       }
     const handleRun = async () => {

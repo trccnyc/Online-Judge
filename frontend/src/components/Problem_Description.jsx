@@ -22,7 +22,7 @@ export const Render_problem = ({id}) => {
       
       const fetchData = async () => {
       const response = await fetchproblem(id);
-      setProblem(response)
+      setProblem(response.problem)
       }
     return (
       <div className="lg:w-1/2 lg:pr-4 mb-4 lg:mb-0 lg:pl-8 pt-10">
