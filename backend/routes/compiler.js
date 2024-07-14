@@ -5,7 +5,7 @@ const { tokenCheck } = require("../controllers/tokenController.js");
 const { submit } = require("../controllers/submitController.js");
 
 router.use(tokenCheck); //can be removed as we check in ../controllers/submitController
-router.post("/run/:id", run);
+router.post("/run", run);
 router.post("/:id", submit);
 
 module.exports = router;

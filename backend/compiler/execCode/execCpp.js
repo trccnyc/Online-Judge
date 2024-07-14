@@ -15,10 +15,8 @@ const compileCpp = async (filePath, execFile) => {
   });
 };
 
-const execCpp = async (execFile, input, id) => {
-  const problem = await Problem.findById(id);
-  const timeLimit = problem.limits.time;
-  const spaceLimitKB = problem.limits.space * 1024 * 4;
+const execCpp = async (execFile, input) => {
+  const timeLimit = 2;
 
   return new Promise((resolve, reject) => {
     const startTime = process.hrtime();

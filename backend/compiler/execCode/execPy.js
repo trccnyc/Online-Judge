@@ -3,10 +3,9 @@ const fs = require("fs");
 const Problem = require("../../models/Problems");
 const path = require("path");
 
-const execPy = async (filePath, input, id) => {
-  const problem = await Problem.findById(id);
-  const timeLimit = problem.limits.time;
-  const spaceLimitKB = problem.limits.space * 1024 * 4;
+const execPy = async (filePath, input) => {
+
+  const timeLimit = 5;
 
   return new Promise((resolve, reject) => {
     const startTime = process.hrtime();

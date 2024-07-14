@@ -1,4 +1,4 @@
-const { generateFile } = require("../compiler/generateFileController.js");
+const { generateFile } = require("../compiler/generateFile.js");
 const { submitCpp } = require("../compiler/submitCode/submitCpp.js");
 const { submitPy } = require("../compiler/submitCode/submitPy.js");
 const { submitJava } = require("../compiler/submitCode/submitJava.js");
@@ -23,14 +23,25 @@ const submit = async (req, res) => {
   const { language = "cpp", code } = req.body;
   if (code === undefined)
     return res.status(400).json({ success: false, message: "Empty code!" });
+
+  
   try {
     const filePath = await generateFile(language, code);
     let output = "";
     if (language === "cpp" || language === "c") {
       const fileName = path.basename(filePath).split(".")[0];
       const execFile = path.join(execFilesPath, `${fileName}.exe`);
-      await compileCpp(filePath, execFile);
-      output = await submitCpp(execFile, id);
+      try{
+        await compileCpp(filePath, execFile);
+      }catch(err){
+        return res.json({ success: true, output:err })
+      }
+      
+      try{
+        output = await submitCpp(execFile, id);
+      }catch(err){
+        return res.json({ success: true, output:err })
+      }
     } else if (language === "py") {
       output = await submitPy(filePath, id);
     } else if (language === "java") output = await submitJava(filePath, id);
@@ -44,7 +55,7 @@ const submit = async (req, res) => {
     });
     return res.json({ success: true, output });
   } catch (error) {
-    res.status(500).json({ success: false, error });
+    res.status(500).json({ success: false, error  });
   }
 };
 
