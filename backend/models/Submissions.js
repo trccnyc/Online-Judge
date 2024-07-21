@@ -23,5 +23,13 @@ const submissionSchema = new mongoose.Schema({
     enum: ["Time Limit Exceeded", "Wrong Answer", "Accepted", "Runtime Error", "Compilation Error"],
     default: "Pending",
   },
+  submitted_at:{
+    type: Date,
+    default: Date.now,
+  },
+  time:{
+    type:Number,
+    default:2000
+  }
 });
 module.exports = mongoose.model("submission", submissionSchema);

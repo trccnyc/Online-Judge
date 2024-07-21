@@ -4,9 +4,8 @@ const Problem = require("../../models/Problems");
 const path = require("path");
 
 const execPy = async (filePath, input) => {
-
-  const timeLimit = 5;
-
+  
+  const timeLimit =5;
   return new Promise((resolve, reject) => {
     const startTime = process.hrtime();
     const execProcess = exec(
@@ -28,17 +27,20 @@ const execPy = async (filePath, input) => {
             });
           }
         } else if (elapsedTime > timeLimit)
+        {
           reject({
             type: "Time Limit Exceeded",
             message: "Time Limit Exceeded",
-          });
-        else if (stderr)
+          });}
+        else if (stderr){
           reject({
             type: "Runtime Error",
             message: stderr,
-          });
-        else resolve(stdout);
-      }
+          });}
+          else{
+            console.log(stdout);
+        resolve(stdout);
+          }}
     );
 
     execProcess.stdin.write(input);

@@ -3,6 +3,8 @@ const app = express();
 const userRoutes = require("./routes/user.js");
 const problemRoutes = require("./routes/problem.js");
 const compilerRoutes = require("./routes/compiler.js");
+const submissionRoutes=require('./routes/submissions.js');
+const contestRoutes=require('./routes/contest.js');
 const port = process.env.PORT;
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -20,6 +22,8 @@ app.use(bodyParser.json());
 app.use("/", userRoutes);
 app.use("/problemset", problemRoutes);
 app.use("/compiler", compilerRoutes);
+app.use("/submissions", submissionRoutes);
+app.use('/contest',contestRoutes)
 
 app.use((req, res) => {
   res.status(404).send("Page not found");

@@ -1,8 +1,7 @@
 const { exec } = require("child_process");
-const TestCase = require("../../models/Testcases");
+
 
 const submitJava = async (filePath, id) => {
-  const testcasesSchema = await TestCase.findById(id);
   const testcases = testcasesSchema.testcase;
   return new Promise((resolve, reject) => {
     let b = 0;

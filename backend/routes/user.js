@@ -5,6 +5,7 @@ const {
   login,
   logout,
   userCheck,
+  updateUser,
 } = require("../controllers/userController.js");
 
 router.get("/", (req, res) => {
@@ -14,5 +15,6 @@ router.get("/user", userCheck);
 router.get("/logout", logout);
 router.post("/login", login);
 router.post("/register", register);
+router.post("/updateuser", updateUser);
 
 module.exports = router;

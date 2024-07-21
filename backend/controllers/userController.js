@@ -45,7 +45,7 @@ const register = async (req, res) => {
 
     //------- json web token --------
     const token = jwt.sign(
-      { id: user._id, email, firstName, lastName },
+      { id: user._id, email },
       process.env.SECRET_KEY,
       {
         expiresIn: "1d",
@@ -101,8 +101,6 @@ const login = async (req, res) => {
       {
         id: user._id,
         email,
-        firstName: user.firstName,
-        lastName: user.lastName,
       },
       process.env.SECRET_KEY,
       {
@@ -139,7 +137,20 @@ const logout = async (req, res) => {
     console.log("Error in ./controllers/userController-logout", err);
   }
 };
-
+const updateUser=async(req,res)=>{
+  try{
+    const cookie = req.cookies;
+    const token = cookie.token;
+    if (!token)return res.send({ success: false, message: "Token not found" });
+    const decode = jwt.decode(token, process.env.SECRET_KEY);
+    console.log(decode);
+    if(!decode.email)return res.send({success: false, message: "Invalid Token"})
+    const {firstName,lastName}=req.body;
+    const updatedName=await User.findOneAndUpdate({email:decode.email},{firstName,lastName});
+  }catch(err){
+    console.log("Error in ./controllers/userController-updateUser",err)
+  }
+}
 const userCheck = async (req, res) => {
   try {
     const cookie = req.cookies;
@@ -162,4 +173,4 @@ const userCheck = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, userCheck };
+module.exports = { register, login, logout, userCheck,updateUser };

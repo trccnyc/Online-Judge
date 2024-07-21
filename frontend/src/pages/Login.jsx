@@ -34,8 +34,8 @@ const Login = () => {
         onSubmit={handeSubmit}
       >
         <Heading label={"Login"}/>
-        <InputBox onChange={(e) => setEmail(e.target.value)} type={'email'} placeholder={"example@gmail.com"} label={"Email"}/>
-        <InputBox onChange={(e) => setPassword(e.target.value)} type={'password'} placeholder={"password@123"} label={"Password"}/>
+        <InputBox  name={"email"} autoComplete={"email"} onChange={(e) => setEmail(e.target.value)} type={'email'} placeholder={"example@gmail.com"} label={"Email"}/>
+        <InputBox   name={"password"} autoComplete={"current-password"} onChange={(e) => setPassword(e.target.value)} type={'password'} placeholder={"password@123"} label={"Password"}/>
         <div className="flex items-center justify-center">
         <Button >Login</Button>
         </div>

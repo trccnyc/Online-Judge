@@ -1,9 +1,9 @@
 import axios from 'axios';
-const API_URL="http://localhost:3000"
+const SERVER=import.meta.env.VITE_BACKEND_URL
 
 export const submit=async(payload,id)=>{
     try{
-      const responce = await axios.post(`http://localhost:3000/compiler/${id}`, payload,{withCredentials: true});
+      const responce = await axios.post(`${SERVER}/compiler/${id}`, payload,{withCredentials: true});
       console.log(responce.data)
         return responce.data;
     }

@@ -20,12 +20,22 @@ const Navbar=()=>{
             <Link to="/problemset" className="text-white px-4 py-2 rounded-md hover:bg-blue-500">
               Problemset
             </Link>
+            {user.admin&&(
             <Link to="/addproblem" className="text-white px-4 py-2 rounded-md hover:bg-blue-500">
               Add Problem
             </Link>
+          )}
            {user.success&&(
-            <><p className="text-white px-4 py-2 rounded-md">{user.email} </p>
-            <button onClick={logoutHandler} className="text-black px-4 py-2 bg-gray-200 rounded-md hover:bg-blue-500">Logout</button></>
+            <>
+             <Link to="/contests" className="text-white px-4 py-2 rounded-md hover:bg-blue-500">
+             Contests
+            </Link>
+            <Link to="/submissions" className="text-white px-4 py-2 rounded-md hover:bg-blue-500">
+             Submissions
+            </Link>
+            <p className="text-white px-4 py-2 rounded-md">{user.email} </p>
+            <button onClick={logoutHandler} className="text-black px-4 py-2 bg-gray-200 rounded-md hover:bg-blue-500">Logout</button>
+            </>
            )
            }
            {!user.success&&(<>

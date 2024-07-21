@@ -1,8 +1,9 @@
 import axios from "axios";
 const SERVER=import.meta.env.VITE_BACKEND_URL
-export async function fetchproblem(id){
+
+export async function submissions(){
     try{
-        const responce = await axios.get(`${SERVER}/problemset/${id}`,{withCredentials: true});
+        const responce = await axios.get(`${SERVER}/submissions`,{withCredentials: true});
           return responce.data;
       }
       catch(err){

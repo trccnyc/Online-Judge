@@ -1,9 +1,11 @@
-export function InputBox({label,onChange,placeholder,type}){
+export function InputBox({label,onChange,placeholder,type,name,autoComplete}){
     return <div className="mb-4 ">
     <label className="block text-gray-700 text-sm font-bold mb-2">
       {label} :
     </label>
     <input
+      name={name}
+      autoComplete={autoComplete}
       type={type}
       placeholder={placeholder}
       onChange={onChange}

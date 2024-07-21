@@ -2,6 +2,7 @@ import { useState,useEffect } from "react";
 import { fetchproblem } from "../services/fetchproblem";
 import { Description } from "../components/Description";
 import axios from "axios";
+import { Button } from "./Button";
 
 export const Render_problem = ({id}) => {
     const [problem, setProblem] = useState({

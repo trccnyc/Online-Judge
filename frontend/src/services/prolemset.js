@@ -1,7 +1,9 @@
 import axios from "axios";
+const SERVER=import.meta.env.VITE_BACKEND_URL
+
 export async function problemset(){
     try{
-        const responce = await axios.get('http://localhost:3000/problemset',{withCredentials: true});
+        const responce = await axios.get(`${SERVER}/problemset`,{withCredentials: true});
           return responce.data;
       }
       catch(err){

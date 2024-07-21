@@ -6,6 +6,8 @@ import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism.css";
 import { submit } from "../services/submit_code";
+import { Button } from "./Button";
+import { Link } from "react-router-dom";
 
 
 const defaultCodes={'cpp':`#include <iostream>
@@ -27,7 +29,7 @@ const defaultCodes={'cpp':`#include <iostream>
         }
     }
     `}
-export const Render_compiler = ({id}) => {
+export const Render_compiler = ({id,contestID}) => {
     const [code, setCode] = useState('');
     const [language, setLanguage] = useState("cpp");
     const [input, setInput] = useState("");
@@ -39,6 +41,7 @@ export const Render_compiler = ({id}) => {
         const payload={
           language,
           code,
+          contestID
         }
         try{
           setOutput('Loading...');
@@ -59,7 +62,8 @@ export const Render_compiler = ({id}) => {
         setOutput('Loading...')
               const data=await run(payload)
               console.log(payload);
-              setOutput(data.output);
+              if(data.success)setOutput(data.output )
+              else setOutput(data.output.message)
       } catch (error) {
         console.log(error.response);
       }
@@ -71,6 +75,7 @@ export const Render_compiler = ({id}) => {
             <h1 className="text-3xl font-bold mb-3">
               AlgoU Online Code Compiler
             </h1>
+            <div className="flex items-center justify-between space-x-4">
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
@@ -81,11 +86,20 @@ export const Render_compiler = ({id}) => {
               <option value="py">Python</option>
               <option value="java">Java</option>
             </select>
+            <Link
+            to={`/submissions?id=${id}`}
+            type="button"
+            className="ml-auto text-center bg-gradient-to-br from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 focus:outline-none text-white font-medium rounded-lg text-sm px-5 py-2"
+             >
+             Submissions
+            </Link>
+            </div>
             <div
-              className="bg-grey-100 shadow-md w-full  mb-1"
-              style={{ height: "300px", overflowY: "auto" }}
+              className="bg-gray-700 shadow-md w-full  mb-1"
+              style={{ height: "300px" ,overflow: "auto"}}
             >
               <Editor
+              className="flex-grow"
                 value={code}
                 onValueChange={(code) => setCode(code)}
                 highlight={(code) => highlight(code, languages.js)}
@@ -94,10 +108,10 @@ export const Render_compiler = ({id}) => {
                   fontFamily: '"Fira code", "Fira Mono", monospace',
                   fontSize: 12,
                   outline: "none",
-                  border: "1px solid gray",
+                  height:"100%",
+                  flexGrow:1,
                   backgroundColor: "#f7fafc",
-                  height: "100%",
-                  overflowY: "auto",
+                  overflow: "auto" 
                 }}
               />
             </div>
@@ -117,6 +131,7 @@ export const Render_compiler = ({id}) => {
                 Submit
               </button>
             </div>
+            
           </div>
           <div className="lg:w-full lg:pl-2 pt-3">
             {/* Input textarea */}

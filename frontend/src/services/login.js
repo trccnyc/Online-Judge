@@ -1,9 +1,10 @@
 import axios from 'axios';
-const API_URL="http://localhost:3000"
+const SERVER=import.meta.env.VITE_BACKEND_URL
 
 export const login=async(info)=>{
     try{
-        const response= await axios.post(`${API_URL}/login`,info,{withCredentials: true})
+        console.log(SERVER,info)
+        const response= await axios.post(`${SERVER}/login`,info,{withCredentials: true})
         console.log(response);
         return response.data;
     }

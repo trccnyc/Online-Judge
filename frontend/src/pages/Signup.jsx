@@ -27,7 +27,7 @@ const Register = () => {
       <InputBox onChange={(e) => setfN(e.target.value)} type={'text'} placeholder={"First Name"} label={"First Name"}/>
       <InputBox onChange={(e) => setlN(e.target.value)} type={'text'} placeholder={"Last Name"} label={"Last Name"}/>
       <InputBox onChange={(e) => setEmail(e.target.value)} type={'email'} placeholder={"example@gmail.com"} label={"Email"}/>
-      <InputBox onChange={(e) => setPassword(e.target.value)} type={'password'} placeholder={"password@123"} label={"Password"}/>
+      <InputBox  name={"password"} autocomplete={"new-password"} onChange={(e) => setPassword(e.target.value)} type={'password'} placeholder={"password@123"} label={"Password"}/>
       <div className="flex items-center justify-center">
       <Button >Signup</Button>
       </div>
