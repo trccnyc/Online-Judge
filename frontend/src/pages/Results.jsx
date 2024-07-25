@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
+const SERVER=import.meta.env.VITE_BACKEND_URL
 const Standings=()=>{
     const [searchParams] = useSearchParams();
     const id = searchParams.get("id");
@@ -14,7 +14,7 @@ const Standings=()=>{
     fetchData()}, [])
     
     const fetchData = async () => {
-        const response = await axios.get(`http://localhost:3000/contest/results/${id}`,{withCredentials: true});
+        const response = await axios.get(`${SERVER}/contest/results/${id}`,{withCredentials: true});
         console.log('asdasd',response.data);
     setR(response.data.result);
     }

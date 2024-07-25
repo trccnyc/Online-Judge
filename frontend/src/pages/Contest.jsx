@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+const SERVER=import.meta.env.VITE_BACKEND_URL 
 
 const Contest=()=>{
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Contest=()=>{
     useEffect(()=>{
     fetchData()}, [])
     const fetchData = async () => {
-        const response = await axios.get(`http://localhost:3000/contest/${id}`,{withCredentials: true});
+        const response = await axios.get(`${SERVER}/${id}`,{withCredentials: true});
         console.log('awsdas',response.data);
         setC(response.data.contest);
     }

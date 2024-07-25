@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { format } from 'date-fns';
 import {useState,useEffect} from 'react';
-
+const SERVER=import.meta.env.VITE_BACKEND_URL
 import { Link, useNavigate } from 'react-router-dom';
  const Contestset=()=>{
 const [Cs, setC] = useState([])
@@ -10,7 +10,7 @@ useEffect(()=>{
 fetchData()}, [])
 
 const fetchData = async () => {
-    const response = await axios.get('http://localhost:3000/contest',{withCredentials: true});
+    const response = await axios.get(`${SERVER}/contest`,{withCredentials: true});
     console.log('asdasd',response.data.contests);
 setC(response.data.contests);
 }
