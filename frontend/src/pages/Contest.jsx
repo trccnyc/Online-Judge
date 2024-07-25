@@ -19,7 +19,7 @@ const Contest=()=>{
     useEffect(()=>{
     fetchData()}, [])
     const fetchData = async () => {
-        const response = await axios.get(`${SERVER}/${id}`,{withCredentials: true});
+        const response = await axios.get(`${SERVER}/contest/${id}`,{withCredentials: true});
         console.log('awsdas',response.data);
         setC(response.data.contest);
     }
